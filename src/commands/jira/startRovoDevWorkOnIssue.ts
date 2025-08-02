@@ -20,7 +20,13 @@ export async function startRovoDevWorkOnIssue(issueOrKeyAndSite: MinimalIssueOrK
     const chatMessage = `
         You are working on the jira issue ${issue.key} (${issue.summary}). I will include the issue description at the bottom of this message.
         Please read the description, query any additional documentation that you may need, and get to work on the task.
-        Generally, you will perform a coding task, stage all the files that were modified with "git add", do a "git commit -m" with the message being a succint description of the intent of the code changes (max 250 chars), and then push a branch to git remote.
+        Generally, you will perform a coding task, and complete the goal from start to finish.
+
+        Do not write tests unless I have explicitly asked you to do so.
+
+        Once you are satisfied with your code changes, use "git add" on all changed files.
+        Then use \`git commit -m "{changeSummary}" --no-verify\` to commit your changes, replacing {changeSummary} with a succinct description of the intent of the changes you made (max 250 chars).
+        Finally, push your changes using \`git push --no-verify\`.
 
         The jira issue is from jira located at ${issue.siteDetails.host}.
 
