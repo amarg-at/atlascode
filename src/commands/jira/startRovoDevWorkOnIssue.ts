@@ -3,14 +3,6 @@ import { isMinimalIssue, MinimalIssue, MinimalIssueOrKeyAndSite } from '@atlassi
 import { DetailedSiteInfo } from '../../atlclients/authInfo';
 import { Container } from '../../container';
 import { fetchMinimalIssue } from '../../jira/fetchIssue';
-// import { FeatureFlagClient, Features } from '../../util/featureFlags';
-
-interface VsCodeApi {
-    postMessage<T = {}>(msg: T): void;
-    setState(state: {}): void;
-    getState(): {};
-}
-declare function acquireVsCodeApi(): VsCodeApi;
 
 export async function startRovoDevWorkOnIssue(issueOrKeyAndSite: MinimalIssueOrKeyAndSite<DetailedSiteInfo>) {
     let issue: MinimalIssue<DetailedSiteInfo>;
@@ -38,25 +30,15 @@ export async function startRovoDevWorkOnIssue(issueOrKeyAndSite: MinimalIssueOrK
         """
         `;
 
-    console.log('sending message to vscode', chatMessage);
+    console.log('Starting RovoDev work on issue:', issue.key);
 
-    const vscodeApi = acquireVsCodeApi();
+    // Get the ShipIt webview provider from the container
+    const { shipitRovodevWebviewProvider } = Container;
 
-    vscodeApi.postMessage({
-        type: 'createWorktree',
-        message: chatMessage.trim(),
-    });
-
-    const { startWorkV3WebviewFactory, startWorkWebviewFactory, shipitRovodevWebviewProvider } = Container;
-    const asfd = await shipitRovodevWebviewProvider.resolveWebviewView();
-    shipitRovodevWebviewProvider.postMessage({
-        type: 'createWorktree',
-        message: chatMessage.trim(),
-    });
-
-    // const factory = FeatureFlagClient.checkGate(Features.StartWorkV3)
-    //     ? startWorkV3WebviewFactory
-    //     : startWorkWebviewFactory;
-
-    // factory.createOrShow({ issue });
+    // Create worktree and send message directly (doesn't require webview to be open)
+    // This will:
+    // 1. Create a new git worktree
+    // 2. Start a RovoDev server for that worktree
+    // 3. Send the chat message to the new RovoDev server
+    await shipitRovodevWebviewProvider.createWorktreeWithMessage(chatMessage.trim());
 }
