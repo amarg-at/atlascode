@@ -20,7 +20,7 @@ export async function startRovoDevWorkOnIssue(issueOrKeyAndSite: MinimalIssueOrK
     const chatMessage = `
         You are working on the jira issue ${issue.key} (${issue.summary}). I will include the issue description at the bottom of this message.
         Please read the description, query any additional documentation that you may need, and get to work on the task.
-        Generally, you will perform a coding task, and then push a branch to git remote.
+        Generally, you will perform a coding task, stage all the files that were modified with "git add", do a "git commit -m" with the message being a succint description of the intent of the code changes (max 250 chars), and then push a branch to git remote.
 
         The jira issue is from jira located at ${issue.siteDetails.host}.
 
